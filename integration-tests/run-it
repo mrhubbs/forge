@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# run interactive
-
-docker run --user tester -it forge-int-test

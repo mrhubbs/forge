@@ -4,7 +4,7 @@ module.exports = {
       title: 'Some Drab Title'
     }
   },
-  // NOTE: this is overwritten by the container build process
+  // NOTE: this is overwritten by the CI process
   forgeVersion: '',
   dirs: {
     pages: './src/pages',

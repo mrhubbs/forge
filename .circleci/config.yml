@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:10.15.3
+      - image: semberwj/forge-auto-testing:latest
 
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -20,18 +20,31 @@ jobs:
       - checkout
 
       # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+      # - restore_cache:
+      #     keys:
+      #       - v1-dependencies-{{ checksum "package.json" }}
+      #       # fallback to using the latest cache if no exact match is found
+      #       - v1-dependencies-
 
       - run: npm install
 
-      - save_cache:
-          paths:
-            - node_modules
-          key: v1-dependencies-{{ checksum "package.json" }}
+      # - save_cache:
+      #     paths:
+      #       - node_modules
+      #     key: v1-dependencies-{{ checksum "package.json" }}
+
+      # install forge
+      - run: ./install-forge
 
       # run tests!
       - run: npm run test
+
+      # get current forge version
+      - run: cat package.json | grep "\"version\"" | awk '{print $2}' | sed "s/\"//g" | sed s/,// > ~/forge-version
+
+      # write current forge version into test site's forge config
+      - run: cd ~/example-site
+      - run: ls
+      - run: "cat ./forge.config.js | sed \"s/^  forgeVersion: .*$/  forgeVersion: \"$(cat ~/forge-version)\",/\" > ./forge.config.js"
+
+      - run: ~/tests/run-tests
